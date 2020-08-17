@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
 import Header from '../../components/Header';
 
@@ -32,32 +32,49 @@ const Dashboard: React.FC = () => {
     }
 
     loadFoods();
-  }, [foods]);
+  }, [setFoods]);
 
-  async function handleAddFood(
-    food: Omit<IFoodPlate, 'id' | 'available'>,
-  ): Promise<void> {
-    try {
-      const { data } = await api.post<IFoodPlate>('/foods', food);
+  const handleAddFood = useCallback(
+    async (food: Omit<IFoodPlate, 'id' | 'available'>): Promise<void> => {
+      try {
+        const { data } = await api.post<IFoodPlate>(`/foods`, {
+          ...food,
+          available: true,
+        });
 
-      setFoods(prevFoods =>
-        prevFoods.map(prevFood => {
-          return {
-            ...prevFood,
-            data,
-          };
-        }),
-      );
-    } catch (err) {
-      console.log(err);
-    }
-  }
+        setFoods([...foods, data]);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [],
+  );
+
+  // async function handleAddFood(
+  //   food: Omit<IFoodPlate, 'id' | 'available'>,
+  // ): Promise<void> {
+  //   try {
+  //     const { data } = await api.post<IFoodPlate>(`/foods`, {
+  //       ...food,
+  //       available: true,
+  //     });
+
+  //     setFoods(prevFoods =>
+  //       prevFoods.map(prevFood => Object.assign(prevFood, { data })),
+  //     );
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }
 
   async function handleUpdateFood(
     food: Omit<IFoodPlate, 'id' | 'available'>,
   ): Promise<void> {
     try {
-      await api.put(`/foods/`, food);
+      const { data } = await api.put(`/foods/${editingFood.id}`, food);
+      setFoods(prevFoods =>
+        prevFoods.map(prevFood => (prevFood.id === data.id ? data : prevFood)),
+      );
     } catch (err) {
       console.log(err);
     }
@@ -65,6 +82,7 @@ const Dashboard: React.FC = () => {
 
   async function handleDeleteFood(id: number): Promise<void> {
     await api.delete(`/foods/${id}`);
+    setFoods(prevFoods => prevFoods.filter(prevFood => prevFood.id !== id));
   }
 
   function toggleModal(): void {
@@ -76,6 +94,7 @@ const Dashboard: React.FC = () => {
   }
 
   function handleEditFood(food: IFoodPlate): void {
+    toggleEditModal();
     setEditingFood(food);
   }
 
