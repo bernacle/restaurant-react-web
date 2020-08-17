@@ -23,6 +23,13 @@
       "price": "25.90",
       "available": true,
       "image": "https://storage.googleapis.com/golden-wind/bootcamp-gostack/desafio-food/food3.png"
+    },
+    {
+      "image": "https://static.wixstatic.com/media/080aac_f21d6e1f3c3b436587a8b73b21bd22c5~mv2.jpg/v1/fill/w_809,h_471,al_c,q_90/080aac_f21d6e1f3c3b436587a8b73b21bd22c5~mv2.jpg",
+      "name": "Pasta",
+      "price": "10.00",
+      "description": "Testes!",
+      "id": 4
     }
   ]
 }
